@@ -32,21 +32,6 @@ console.log('outputs: ', outputs);
 // });
 // output.close();
 
-
-// gpio stuff directly from https://github.com/JamesBarwell/rpi-gpio.js
-// var gpio = require('rpi-gpio');
-// gpio.setMode(gpio.MODE_BCM);
-//
-// gpio.on('change', function(channel, value) {
-//   console.log('Channel ' + channel + ' value is now ' + value);
-// });
-// gpio.setup(23, gpio.DIR_IN, gpio.EDGE_BOTH);
-// gpio.setup(24, gpio.DIR_IN, gpio.EDGE_BOTH);
-// gpio.setup(25, gpio.DIR_IN, gpio.EDGE_BOTH);
-// gpio.destroy(function() {
-  // console.log('All pins unexported');
-// });
-
 // try with different gpio lib which supports configuring pullup/-down inputs
 var rpio = require('rpio');
 rpio.open(16, rpio.INPUT, rpio.PULL_UP); // 18, 22
