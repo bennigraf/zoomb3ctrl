@@ -1,13 +1,13 @@
 
 
-var midi = require('midi');
-var input = new midi.input();
-console.log(input.getPortCount());
-console.log(input.getPortName(1));
+// var midi = require('midi');
+// var input = new midi.input();
+// console.log(input.getPortCount());
+// console.log(input.getPortName(1));
 
-input.ignoreTypes(false, false, false);
+// input.ignoreTypes(false, false, false);
 
-input.closePort();
+// input.closePort();
 
 
 // out:
@@ -20,20 +20,17 @@ output.openPort(1);
 output.sendMessage([192, 0]); // 192 is program change, the num is the number
 */
 
-var easymidi = require('easymidi');
 
-var outputs = easymidi.getOutputs();
-console.log('outputs: ', outputs);
+var rpio = require('rpio');
+var ZoomB3 = require('./ZoomB3.js');
 
-// ToDo: find zoom by name; only connect if it's there...
-// var output = new easymidi.Output(outputs[1]);
-// output.send('program', {
-//   number: 0
-// });
-// output.close();
+const EventEmitter = require('events'); // used for ButtonEmitter class
+
+var zoom = new ZoomB3();
+zoom.connect();
+
 
 // try with different gpio lib which supports configuring pullup/-down inputs
-var rpio = require('rpio');
 rpio.open(16, rpio.INPUT, rpio.PULL_UP); // 18, 22
 console.log('Pin 16 is currently set ' + (rpio.read(16) ? 'high' : 'low'));
 
@@ -49,22 +46,44 @@ console.log('Pin 22 is currently set ' + (rpio.read(22) ? 'high' : 'low'));
 // rpio.poll(16, pollcallback);
 
 // 2nd approach: just keep reading manually
-var lastvalues = {
-  16: rpio.read(16),
-  18: rpio.read(18),
-  22: rpio.read(22)
+// use inline class for now as event emitter helper
+class ButtonEmitter extends EventEmitter {
+  constructor() {
+    super();
+    
+    this.lastvalues = {
+      16: rpio.read(16),
+      18: rpio.read(18),
+      22: rpio.read(22)
+    }
+  }
+  
+  update(pin, value) {
+    if (value != this.lastvalues[pin]) {
+      console.log(pin + ':', value ? '⬆︎' : '⬇︎', (new Date()).toISOString());
+      console.log('event:', pin.toString() + '-' + (value ? 'up' : 'down'));
+      this.emit(pin.toString() + '-' + (value ? 'up' : 'down'));
+      this.lastvalues[pin] = value;
+    }
+  }
 }
+var buttonEmitter = new ButtonEmitter();
 
 setInterval(function() {
   pins = [16, 18, 22];
   
   for (let i in pins) {
     pin = pins[i];
-    value = rpio.read(pin);
-    if (value != lastvalues[pin]) {
-      console.log(pin + ':', value ? '⬆︎' : '⬇︎', (new Date()).toISOString());
-      lastvalues[pin] = value;
-    }
+    buttonEmitter.update(pin, rpio.read(pin));
   }
 }, 50);
 
+// setup event emitters once zoom is connected
+zoom.on('connected', function() {
+  buttonEmitter.on('16-down', function() {
+    zoom.nextPatch();
+  });
+  buttonEmitter.on('22-down', function() {
+    zoom.previousPatch();
+  });
+});
