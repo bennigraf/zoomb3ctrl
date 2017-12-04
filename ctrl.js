@@ -27,7 +27,13 @@ var ZoomB3 = require('./ZoomB3.js');
 const EventEmitter = require('events'); // used for ButtonEmitter class
 
 var zoom = new ZoomB3();
-zoom.connect();
+
+// for now delay connection a tiny little bit because I define a 'connected' event
+// handler further down below this script
+setTimeout(function() {
+  zoom.connect();
+}, 500);
+
 
 
 // try with different gpio lib which supports configuring pullup/-down inputs
