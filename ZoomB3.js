@@ -141,10 +141,11 @@ class ZoomB3 extends EventEmitter {
   }
   
   nextPatch() {
-    this.currentPatchNum += 1;
+    this.currentPatchNum = (this.currentPatchNum + 1) % 100;
     this.output.send('program', {
       number: this.currentPatchNum
     });
+    console.log('new patch: ', this.currentPatchNum);
     
     console.log('requesting patch info');
     this.send('sysex', [0xf0, 0x52, 0x00, 0x4f,  0x29, 0xf7]); // replace 5a with 4f for B3
@@ -152,9 +153,13 @@ class ZoomB3 extends EventEmitter {
   
   previousPatch() {
     this.currentPatchNum -= 1;
+    if (this.currentPatchNum < 0) {
+      this.currentPatchNum = 99;
+    }
     this.output.send('program', {
       number: this.currentPatchNum
     });
+    console.log('new patch: ', this.currentPatchNum);
     
     console.log('requesting patch info');
     this.send('sysex', [0xf0, 0x52, 0x00, 0x4f,  0x29, 0xf7]); // replace 5a with 4f for B3
