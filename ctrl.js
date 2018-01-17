@@ -87,9 +87,9 @@ setInterval(function() {
 // setup event emitters once zoom is connected
 zoom.on('connected', function() {
   buttonEmitter.on('16-down', function() {
-    zoom.nextPatch();
+    zoom.previousPatch();
   });
   buttonEmitter.on('22-down', function() {
-    zoom.previousPatch();
+    zoom.nextPatch();
   });
 });
