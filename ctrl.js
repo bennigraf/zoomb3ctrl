@@ -93,3 +93,17 @@ zoom.on('connected', function() {
     zoom.nextPatch();
   });
 });
+
+let net = require('net');
+let client = new net.Socket();
+client.on('close', function() {
+	console.log('Connection closed');
+});
+
+zoom.on('patchname', function(patchname) {
+  console.log('setting patchname to display...');
+  client.connect(3024, '127.0.0.1', function() {
+  	console.log('Connected, writing...');
+  	client.write(patchname);
+  });
+});

@@ -47,12 +47,11 @@ class ZoomB3 extends EventEmitter {
         // this causes a program change to be received etc.
       }
     }.bind(this));
+    
     // device discovery
     this.send('sysex', [0xf0, 0x7e, 0x00, 0x06, 0x01, 0xf7]);
     
-    
-    // expecting specific response...
-    
+    // expecting specific response, see callback above...
   }
   
   recvdSysex(msg) {
@@ -61,7 +60,9 @@ class ZoomB3 extends EventEmitter {
       let patchname = msg.bytes.slice(55, 67);
       // let patchname = msg.bytes.length;
       console.log('patch:', patchname);
-      console.log(patchname.map(function(v) { return String.fromCharCode(v) }));
+      patchnameString = patchname.map(function(v) { return String.fromCharCode(v) });
+      console.log(patchnameString);
+      this.emit('patchname', patchnameString);
     } else {
       console.log('recvd input:', msg.bytes.map(function(v) { return v.toString(16) }));
     }
