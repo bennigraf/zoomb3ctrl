@@ -105,6 +105,7 @@ client.on('error', function(e) {
 
 zoom.on('patchname', function(patchname) {
   console.log('setting patchname to display...');
+  console.log(patchname);
   client.connect(3024, '127.0.0.1', function() {
   	console.log('Connected, writing...');
   	client.write(patchname);
