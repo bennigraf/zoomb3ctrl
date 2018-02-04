@@ -1,5 +1,4 @@
 
-
 // var midi = require('midi');
 // var input = new midi.input();
 // console.log(input.getPortCount());
@@ -97,7 +96,11 @@ zoom.on('connected', function() {
 let net = require('net');
 let client = new net.Socket();
 client.on('close', function() {
-	console.log('Connection closed');
+  console.log('Connection closed');
+});
+client.on('error', function(e) {
+  console.log('Error!');
+  console.log(e);
 });
 
 zoom.on('patchname', function(patchname) {
