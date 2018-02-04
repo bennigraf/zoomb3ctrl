@@ -60,7 +60,7 @@ class ZoomB3 extends EventEmitter {
       let patchname = msg.bytes.slice(55, 67);
       // let patchname = msg.bytes.length;
       console.log('patch:', patchname);
-      patchnameString = patchname.map(function(v) { return String.fromCharCode(v) });
+      let patchnameString = patchname.map(function(v) { return String.fromCharCode(v) });
       console.log(patchnameString);
       this.emit('patchname', patchnameString);
     } else {
